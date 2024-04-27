@@ -23,7 +23,7 @@ class Controller:
     
     def reset_map(self):
         self.map_datum = {
-            f'{self.level}':[['_' for _ in range(SCREEN_WIDTH // GROUND_X)] for _ in range(SCREEN_HEIGHT // GROUND_Y)]}
+            f'{self.level}':[['_' for _ in range(STAGE_WIDTH // GROUND_X)] for _ in range(STAGE_HEIGHT // GROUND_Y)]}
         self.write_map(self.map_datum[str(self.level)])
     
     def write_map(self, data):
@@ -81,7 +81,7 @@ class Controller:
             self.map_element.add(Map(self.mouse))
         elif self.key_input[pygame.K_r]:
             self.reset_map()
-            self.draw_map()
+            self.load_map()
         elif self.key_input[pygame.K_s]:
             self.write_map(self.map_data)
     
