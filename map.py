@@ -6,7 +6,14 @@ class Map(pygame.sprite.Sprite):
         self.image = pygame.Surface((GROUND_SIZE))
         self.image.fill(self.map_element(number))
         self.rect = self.image.get_rect(topleft=position)
+        self.speed = 0
     
     def map_element(self, number):
         self.element = {'color':['brown', 'black']}
         return self.element['color'][number-1]
+    
+    def set_movement(self):
+        self.rect.x += self.speed
+    
+    def update(self):
+        self.set_movement()

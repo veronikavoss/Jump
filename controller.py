@@ -21,6 +21,7 @@ class Controller:
         self.press_key = pygame.font.Font(None, 80).render('Press SPACE Key', True, 'blue')
         self.press_key_rect = self.press_key.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
     
+    # map setting
     def reset_map(self):
         self.map_datum = {
             f'{self.level}':[['_' for _ in range(STAGE_WIDTH // GROUND_X)] for _ in range(STAGE_HEIGHT // GROUND_Y)]}
@@ -55,7 +56,7 @@ class Controller:
                     self.player.add(Player((column * GROUND_X, row * GROUND_Y)))
     
     # key settings
-    def set_game_key_input(self):
+    def set_ready_key_input(self):
         if self.game_status == 'ready':
             if self.key_input[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]:
                 self.game_status = 'playing'
@@ -65,7 +66,9 @@ class Controller:
             self.edit_mode = True
         if self.player:
             if self.key_input[pygame.K_RIGHT]:
-                self.player.sprite.direction_x = 1
+                # self.player.sprite.direction_x = 1
+                for map in self.map:
+                    map.speed = 3
             elif self.key_input[pygame.K_LEFT]:
                 self.player.sprite.direction_x = -1
             else:
@@ -75,6 +78,8 @@ class Controller:
         if self.key_input[pygame.K_ESCAPE]:
             self.edit_mode = False
             self.map_element.empty()
+        elif self.key_input[pygame.K_RIGHT]:
+            pass
         elif self.key_input[pygame.K_p]:
             self.map_element_selected = 'P'
             self.map_element.add(Player(self.mouse))
@@ -121,12 +126,13 @@ class Controller:
         if pygame.time.get_ticks() // 1000 % 2 == 0:
             self.screen.blit(self.press_key, self.press_key_rect)
         
-        self.set_game_key_input()
+        self.set_ready_key_input()
     
     def set_playing(self):
         self.screen.fill('white')
         if not self.edit_mode:
             self.set_player_key_input()
+            self.map.update()
         elif self.edit_mode:
             for row in range(SCREEN_HEIGHT // GROUND_X):
                 for column in range(SCREEN_WIDTH // GROUND_Y):
@@ -138,6 +144,7 @@ class Controller:
         self.player.update()
         self.player.draw(self.screen)
     
+    # update run
     def update(self):
         self.key_input = pygame.key.get_pressed()
         self.mouse_input = pygame.mouse.get_pressed()
