@@ -48,7 +48,9 @@ class Controller:
         for row, data_list in enumerate(self.map_data):
             for column, data in enumerate(data_list):
                 if data == '1':
-                    self.map.add(Map((column * GROUND_X, row * GROUND_Y)))
+                    self.map.add(Map(1, (column * GROUND_X, row * GROUND_Y)))
+                elif data == '2':
+                    self.map.add(Map(2, (column * GROUND_X, row * GROUND_Y)))
                 elif data == 'P':
                     self.player.add(Player((column * GROUND_X, row * GROUND_Y)))
     
@@ -78,7 +80,10 @@ class Controller:
             self.map_element.add(Player(self.mouse))
         elif self.key_input[pygame.K_1]:
             self.map_element_selected = '1'
-            self.map_element.add(Map(self.mouse))
+            self.map_element.add(Map(1, self.mouse))
+        elif self.key_input[pygame.K_2]:
+            self.map_element_selected = '2'
+            self.map_element.add(Map(2, self.mouse))
         elif self.key_input[pygame.K_r]:
             self.reset_map()
             self.load_map()
@@ -103,6 +108,9 @@ class Controller:
                         pygame.time.delay(100)
                     elif self.map_element_selected == '1':
                         self.map_data[y][x] = '1'
+                        pygame.time.delay(100)
+                    elif self.map_element_selected == '2':
+                        self.map_data[y][x] = '2'
                         pygame.time.delay(100)
                 self.draw_map()
     
