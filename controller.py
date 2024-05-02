@@ -7,13 +7,24 @@ class Controller:
         self.screen = screen
         self.game_status = 'ready'
         self.level = 1
-        
+        self.key_pressed = False
+        self.mouse_pressed = False
         self.set_font()
         # self.reset_map()
         self.load_map()
         self.edit_mode = False
         self.map_element = pygame.sprite.GroupSingle()
         self.map_element_selected = ''
+    
+    def key_status(self):
+        if self.key_input.count(1) == 0:
+            self.key_pressed = False
+        else:
+            self.key_pressed = True
+        if self.mouse_input[0]:
+            self.mouse_pressed = True
+        else:
+            self.mouse_pressed = False
     
     def set_font(self):
         self.logo = pygame.font.Font(None, 180).render('JUMP', True, 'blue')
@@ -24,7 +35,7 @@ class Controller:
     # map setting
     def reset_map(self):
         self.map_datum = {
-            f'{self.level}':[['_' for _ in range(STAGE_WIDTH // GROUND_X)] for _ in range(STAGE_HEIGHT // GROUND_Y)]}
+            f'{self.level}':[['_' for _ in range(STAGE_WIDTH // TILE_X)] for _ in range(STAGE_HEIGHT // TILE_Y)]}
         self.write_map(self.map_datum[str(self.level)])
     
     def write_map(self, data):
@@ -49,11 +60,11 @@ class Controller:
         for row, data_list in enumerate(self.map_data):
             for column, data in enumerate(data_list):
                 if data == '1':
-                    self.map.add(Map(1, (column * GROUND_X, row * GROUND_Y)))
+                    self.map.add(Map(1, (column * TILE_X, row * TILE_Y)))
                 elif data == '2':
-                    self.map.add(Map(2, (column * GROUND_X, row * GROUND_Y)))
+                    self.map.add(Map(2, (column * TILE_X, row * TILE_Y)))
                 elif data == 'P':
-                    self.player.add(Player((column * GROUND_X, row * GROUND_Y)))
+                    self.player.add(Player((column * TILE_X, row * TILE_Y)))
     
     # key settings
     def set_ready_key_input(self):
@@ -66,20 +77,33 @@ class Controller:
             self.edit_mode = True
         if self.player:
             if self.key_input[pygame.K_RIGHT]:
-                # self.player.sprite.direction_x = 1
-                for map in self.map:
-                    map.speed = 3
+                if self.player.sprite.rect.right <= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
+                    self.player.sprite.direction_x = 1
+                else:
+                    self.player.sprite.direction_x = 0
+                    self.set_map_movement(-1)
             elif self.key_input[pygame.K_LEFT]:
-                self.player.sprite.direction_x = -1
+                if self.player.sprite.rect.left >= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
+                    self.player.sprite.direction_x = -1
+                else:
+                    self.player.sprite.direction_x = 0
+                    self.set_map_movement(1)
             else:
                 self.player.sprite.direction_x = 0
+    
+    def set_map_movement(self, direction):
+        if self.map:
+            for map in self.map:
+                map.rect.x += 3 * direction
     
     def edit_map_key_input(self):
         if self.key_input[pygame.K_ESCAPE]:
             self.edit_mode = False
             self.map_element.empty()
         elif self.key_input[pygame.K_RIGHT]:
-            pass
+            self.edit_map_movement(1)
+        elif self.key_input[pygame.K_LEFT]:
+            self.edit_map_movement(-1)
         elif self.key_input[pygame.K_p]:
             self.map_element_selected = 'P'
             self.map_element.add(Player(self.mouse))
@@ -95,12 +119,17 @@ class Controller:
         elif self.key_input[pygame.K_s]:
             self.write_map(self.map_data)
     
+    def edit_map_movement(self, direction):
+        if self.map:
+            for map in self.map:
+                map.rect.x += TILE_X * direction
+    
     def edit_map_mouse_input(self):
         if self.map_element:
             mouse_x, mouse_y = self.mouse
-            x = mouse_x // GROUND_X
-            y = mouse_y // GROUND_Y
-            self.map_element.sprite.rect.topleft = x * GROUND_X, y * GROUND_Y
+            x = mouse_x // TILE_X
+            y = mouse_y // TILE_Y
+            self.map_element.sprite.rect.topleft = x * TILE_X, y * TILE_Y
         
             if self.mouse_input[0]:
                 print(x,y,':',self.map_data[y][x])
@@ -110,13 +139,10 @@ class Controller:
                 else:
                     if self.map_element_selected == 'P':
                         self.map_data[y][x] = 'P'
-                        pygame.time.delay(100)
                     elif self.map_element_selected == '1':
                         self.map_data[y][x] = '1'
-                        pygame.time.delay(100)
                     elif self.map_element_selected == '2':
                         self.map_data[y][x] = '2'
-                        pygame.time.delay(100)
                 self.draw_map()
     
     # set game mode
@@ -132,11 +158,11 @@ class Controller:
         self.screen.fill('white')
         if not self.edit_mode:
             self.set_player_key_input()
-            self.map.update()
+            # self.map.update()
         elif self.edit_mode:
-            for row in range(SCREEN_HEIGHT // GROUND_X):
-                for column in range(SCREEN_WIDTH // GROUND_Y):
-                    pygame.draw.rect(self.screen, 'gray', (column * GROUND_X, row * GROUND_Y, GROUND_X, GROUND_Y),1)
+            for row in range(SCREEN_HEIGHT // TILE_X):
+                for column in range(SCREEN_WIDTH // TILE_Y):
+                    pygame.draw.rect(self.screen, 'gray', (column * TILE_X, row * TILE_Y, TILE_X, TILE_Y),1)
             self.edit_map_key_input()
             self.edit_map_mouse_input()
             self.map_element.draw(self.screen)
@@ -148,10 +174,11 @@ class Controller:
     def update(self):
         self.key_input = pygame.key.get_pressed()
         self.mouse_input = pygame.mouse.get_pressed()
+        self.key_status()
         self.mouse = pygame.mouse.get_pos()
         # game mode
         if self.game_status == 'ready':
             self.set_ready()
         elif self.game_status == 'playing':
             self.set_playing()
-        # self.create_map()
+        # print(self.key_pressed, self.mouse_pressed)
