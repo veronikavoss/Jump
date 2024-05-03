@@ -19,4 +19,4 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.set_status()
         self.rect.x += self.direction_x * self.move_speed
-        print(self.status)
+        print(self.status, self.direction_x)
