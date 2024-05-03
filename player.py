@@ -11,10 +11,8 @@ class Player(pygame.sprite.Sprite):
         self.move_speed = 3
     
     def set_status(self):
-        if self.direction_x > 0:
-            self.status = 'right'
-        elif self.direction_x < 0:
-            self.status = 'left'
+        if self.direction_x != 0:
+            self.status = 'move'
         else:
             self.status = 'standby'
     

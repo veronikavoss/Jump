@@ -77,16 +77,14 @@ class Controller:
             self.edit_mode = True
         if self.player:
             if self.key_input[pygame.K_RIGHT]:
-                if self.player.sprite.rect.right <= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
-                    self.player.sprite.direction_x = 1
-                else:
-                    self.player.sprite.direction_x = 0
+                self.player.sprite.direction_x = 1
+                if self.player.sprite.rect.right >= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
+                    self.player.sprite.move_speed = 0
                     self.set_map_movement(-1)
             elif self.key_input[pygame.K_LEFT]:
-                if self.player.sprite.rect.left >= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
-                    self.player.sprite.direction_x = -1
-                else:
-                    self.player.sprite.direction_x = 0
+                self.player.sprite.direction_x = -1
+                if self.player.sprite.rect.left <= (SCREEN_WIDTH // 2) + (CHARACTER_X // 2):
+                    self.player.sprite.move_speed = 0
                     self.set_map_movement(1)
             else:
                 self.player.sprite.direction_x = 0
