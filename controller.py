@@ -10,7 +10,6 @@ class Controller:
         self.key_pressed = False
         self.mouse_pressed = False
         self.set_font()
-        # self.reset_map()
         self.load_map()
         self.edit_mode = False
         self.map_element = pygame.sprite.GroupSingle()

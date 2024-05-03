@@ -8,7 +8,8 @@ class Player(pygame.sprite.Sprite):
         self.direction_x, self.direction_y = pygame.Vector2(0,0)
         self.rect = self.image.get_rect(topleft=position)
         self.status = 'standby'
-        self.move_speed = 3
+        self.move_speed = 0
+        self.jump_speed = 0
     
     def set_status(self):
         if self.direction_x != 0:
