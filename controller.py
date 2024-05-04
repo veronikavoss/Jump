@@ -86,7 +86,7 @@ class Controller:
                     self.player.sprite.move_speed = 0
                     self.set_map_movement(1)
             elif self.key_input[pygame.K_SPACE]:
-                self.player.sprite.set_jump()
+                self.player.sprite.jump()
             else:
                 self.player.sprite.move_speed = 3
                 self.player.sprite.direction_x = 0

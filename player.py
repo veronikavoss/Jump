@@ -10,18 +10,22 @@ class Player(pygame.sprite.Sprite):
         self.status = 'standby'
         self.move_speed = 0
         self.jump_speed = 10
+        self.gravity = 0.3
     
     def set_status(self):
         if self.direction_x != 0:
             self.status = 'move'
+        elif self.direction_y != 0:
+            self.status = 'jump'
         else:
             self.status = 'standby'
     
-    def set_jump(self):
-        self.direction_y += self.jump_speed
+    def jump(self):
+        self.direction_y = -self.jump_speed
     
     def update(self):
         self.set_status()
         self.rect.x += self.direction_x * self.move_speed
-        self.direction_y += self.jump_speed
+        self.direction_y += self.gravity
+        self.rect.y += self.direction_y
         print(self.status, self.direction_x)
